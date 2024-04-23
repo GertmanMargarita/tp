@@ -1,0 +1,42 @@
+if [ $# -ne 2 ];
+then
+echo "Укажите два каталога"
+exit
+fi
+if ! [ -d $1 ]; then
+echo 'Первый параметр не является каталогом'
+exit
+fi
+if ! [ -d $2 ]; then
+echo 'Второй параметр не является каталогом'
+exit
+fi
+echo "список файлов во входном каталоге:"
+find $1 -maxdepth 1 -type f
+echo "список каталогов во входном каталоге:"
+find $1 -maxdepth 1 -type d
+echo "список всех файлов, вложенных во входной каталог:"
+for i in find $1 -type f
+do
+echo $i
+name=${i%.}
+ext=${i##.}
+#echo $ext
+shortname=${name##*/}
+#echo $shortname
+newname="$2/$shortname.$ext"
+#echo $newname
+suf=""
+if [ -f $newname ]; then
+
+	suf=1
+	newname="$2/$shortname$suf.$ext"
+	while [ -f $newname ];
+	do
+		suf=$((suf+1))
+		newname="$2/$shortname$suf.$ext"
+	done
+fi	
+#echo $newname
+cp $i $newname
+done
